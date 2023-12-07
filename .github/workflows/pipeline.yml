@@ -32,6 +32,13 @@ jobs:
           start: npm run start-prod
           wait-on: 'http://localhost:5000'
           browser: chrome
+      - name: Build failure
+          uses: rjstone/discord-webhook-notify@v1
+          if: ${{ failure() }}
+          with:
+              severity: error
+              details: Build failed!
+              webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy:
     name: Deploy app
     if: ${{ github.event_name == 'push' && ! contains(join(toJson(github.event.commits.*.message)), '#skip') }}
@@ -43,6 +50,13 @@ jobs:
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy success
+          uses: rjstone/discord-webhook-notify@v1
+          if: ${{ success() }}
+          with:
+              severity: info
+              details: Deploy succeeded!
+              webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     if: ${{ github.event_name == 'push' && ! contains(join(toJson(github.event.commits.*.message)), '#skip') }}
     needs: [simple_deployment_pipeline]
