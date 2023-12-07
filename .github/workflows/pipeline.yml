@@ -54,7 +54,8 @@ jobs:
         if: ${{ success() }}
         with:
           severity: info
-          details: Deploy succeeded!
+          description: Deploy succeeded!
+          details: Successfully deployed to fly.io
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     if: ${{ github.event_name == 'push' && ! contains(join(toJson(github.event.commits.*.message)), '#skip') }}
